@@ -5,7 +5,10 @@
 use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RedirectResponseInterface;
 
-
+/**
+ * Class PaymentResponse
+ * @package Omnipay\Paysec\Message
+ */
 class PaymentResponse extends AbstractResponse implements RedirectResponseInterface
 {
 
