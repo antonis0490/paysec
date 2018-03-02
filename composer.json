@@ -1,0 +1,32 @@
+{
+    "name": "antonis0490/paysec",
+    "type": "library",
+    "description": "Paysec driver for the Omnipay payment processing library",
+    "keywords": [
+        "paysec",
+        "gateway",
+        "merchant",
+        "omnipay",
+        "pay",
+        "payment"
+    ],
+    "homepage": "https://github.com/antonis0490/paysec",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "antonis0490",
+            "homepage": "https://github.com/antonis0490/paysec/contributors"
+        }
+    ],
+    "autoload": {
+        "psr-4": { "Omnipay\\Paysec\\" : "src/" }
+    },
+    "require": {
+        "omnipay/common": "~2.0"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0.x-dev"
+        }
+    }
+}
