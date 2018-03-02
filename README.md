@@ -24,7 +24,7 @@ And run composer to update your dependencies:
 
 The following gateways are provided by this package:
 
-* Cardpay
+* Paysec
 
 For general usage instructions, please see the main [Paysec](https://github.com/thephpleague/Paysec)
 repository.
