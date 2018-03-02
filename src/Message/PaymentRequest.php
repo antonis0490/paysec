@@ -8,7 +8,7 @@ use Omnipay\Common\Message\AbstractRequest;
 class PaymentRequest extends AbstractRequest
 {
     public $liveEndpoint = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
-    protected $sandboxEndpoint = '';
+    protected $sandboxEndpoint = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
 
     public function getEndpoint()
     {
@@ -225,8 +225,6 @@ class PaymentRequest extends AbstractRequest
         $pos = mb_strpos($sign, $this->getPaysecSecret()) + mb_strlen($this->getPaysecSecret());
         $signature = mb_substr($sign, $pos);
 
-        $data["header"]["signature"] = $signature;
-
         $input = array
         (
             "header" => array
@@ -256,7 +254,7 @@ class PaymentRequest extends AbstractRequest
             )
         );
 
-        $encoded = json_encode($data);
+        $encoded = json_encode($input);
 
         return $encoded;
     }
