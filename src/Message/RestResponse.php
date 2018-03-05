@@ -7,7 +7,7 @@ use Omnipay\Common\Message\AbstractResponse;
 use Omnipay\Common\Message\RequestInterface;
 
 
-class PaymentResponse extends AbstractResponse
+class RestResponse extends AbstractResponse
 {
     protected $statusCode;
 
@@ -50,7 +50,7 @@ class PaymentResponse extends AbstractResponse
         if (isset($this->data['message'])) {
             return $this->data['message'];
         }
-
+        
         return null;
     }
 

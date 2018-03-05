@@ -3,7 +3,7 @@
 
 namespace Omnipay\Paysec\Message;
 
-class RestPurchaseRequest extends PaymentRequest
+class RestCompletePurchaseRequest extends PaymentRequest
 {
     public function getData()
     {
