@@ -3,11 +3,11 @@
 
 namespace Omnipay\Paysec\Message;
 
-class RestCompletePurchaseRequest extends PaymentRequest
+class RestCompletePurchaseRequest extends PaymentCompleteRequest
 {
     public function getData()
     {
-        $data = parent::getData();
+        $data = parent::getToken();
         return $data;
     }
 }

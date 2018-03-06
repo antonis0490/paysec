@@ -6,23 +6,14 @@ use Omnipay\Common\Message\AbstractRequest;
 use Omnipay\Common\Exception\InvalidResponseException;
 
 
-class PaymentRequest extends AbstractRequest
+class PaymentCompleteRequest extends AbstractRequest
 {
-    public $liveEndpoint = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
-    protected $sandboxEndpoint = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
-
-    public $liveEndpoint2 = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
-    protected $sandboxEndpoint2 = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
-
+    public $liveEndpoint = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
+    protected $sandboxEndpoint = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
 
     public function getEndpoint()
     {
         return ((bool)$this->getTestMode()) ? $this->sandboxEndpoint : $this->liveEndpoint;
-    }
-
-    public function getEndpoint2()
-    {
-        return ((bool)$this->getTestMode()) ? $this->sandboxEndpoint2 : $this->liveEndpoint2;
     }
 
     public function getReturnUrl()
@@ -313,9 +304,9 @@ class PaymentRequest extends AbstractRequest
         return 'POST';
     }
 
-    protected function createResponse($data, $endpoint)
+    protected function createResponse($data)
     {
-        return $this->response = new PaymentResponse($this, $data, $endpoint);
+        return $this->response = new PaymentResponse($this, $data, $this->getEndpoint());
     }
 
     /**
@@ -324,23 +315,13 @@ class PaymentRequest extends AbstractRequest
      */
     public function toJSON($data, $options = 0)
     {
-        // Because of PHP Version 5.3, we cannot use JSON_UNESCAPED_SLASHES option
-        // Instead we would use the str_replace command for now.
-        // TODO: Replace this code with return json_encode($this->toArray(), $options | 64); once we support PHP >= 5.4
-//        if (version_compare(phpversion(), '5.4.0', '>=') === true) {
-//            return json_encode($data, $options | 64);
-//        }
 
         return $encoded = json_encode($data);
 
-//        return str_replace('\\/', '/', json_encode($data, $options));
     }
 
 
-//    public function sendData($data)
-//    {
-//        return new PaymentResponse($this, $data, $this->getEndpoint());
-//    }
+
     public function sendData($data)
     {
         // don't throw exceptions for 4xx errors
@@ -360,36 +341,36 @@ class PaymentRequest extends AbstractRequest
                 $this->getHttpMethod(),
                 $this->getEndpoint() . '?' . http_build_query($data),
                 array(
-                    'Accept' => 'application/json',
                     'Content-type' => 'application/json',
                 )
             );
         } else {
+
+            $token = "token=".$data['token'];
             $httpRequest = $this->httpClient->createRequest(
                 $this->getHttpMethod(),
                 $this->getEndpoint(),
                 array(
-                    'Accept' => 'application/json',
-                    'Content-type' => 'application/json',
+                    'Content-type' => 'application/x-www-form-urlencoded',
                 ),
-                $this->toJSON($data)
+                $token
             );
         }
 
         try {
-            $httpRequest->getCurlOptions()->set(CURLOPT_SSLVERSION, 6); // CURL_SSLVERSION_TLSv1_2 for libcurl < 7.35
-            $httpRequest->getCurlOptions()->set(CURLOPT_POSTFIELDS, $this->toJSON($data) );
-            $httpRequest->getCurlOptions()->set(CURLOPT_RETURNTRANSFER, true);
+//            $httpRequest->getCurlOptions()->set(CURLOPT_POSTFIELDS, $data );
+//            $httpRequest->getCurlOptions()->set(CURLOPT_HTTPHEADER, array('Content-Type: application/x-www-form-urlencoded') );
             $httpResponse = $httpRequest->send();
             // Empty response body should be parsed also as and empty array
             $body = $httpResponse->getBody(true);
-            $jsonToArrayResponse = !empty($body) ? $httpResponse->json() : array();
-            return $this->response = $this->createResponse($jsonToArrayResponse, $this->getEndpoint2());
+            return $this->response = $this->createResponse($httpResponse);
         } catch (\Exception $e) {
             throw new InvalidResponseException(
                 'Error communicating with payment gateway: ' . $e->getMessage(),
                 $e->getCode()
             );
+
         }
+
     }
 }

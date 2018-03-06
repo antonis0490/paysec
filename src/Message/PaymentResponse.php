@@ -1,68 +1,68 @@
 <?php
 
-
 namespace Omnipay\Paysec\Message;
 
 use Omnipay\Common\Message\AbstractResponse;
-use Omnipay\Common\Message\RequestInterface;
+use Omnipay\Common\Message\RedirectResponseInterface;
 
 
-class PaymentResponse extends AbstractResponse
+class PaymentResponse extends AbstractResponse implements RedirectResponseInterface
 {
-    protected $statusCode;
 
-    public function __construct(RequestInterface $request, $data, $statusCode = 200)
+    protected $endpoint;
+
+
+    public function __construct($purchaseRequest, $data, $endpoint)
     {
-        parent::__construct($request, $data);
-        $this->statusCode = $statusCode;
+        parent::__construct($purchaseRequest, $data);
+        $this->endpoint = $endpoint;
     }
 
+
+
+    /**
+     * Gets the redirect target url.
+     */
+    public function getRedirectUrl()
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * Get the required redirect method (either GET or POST).
+     */
+    public function getRedirectMethod()
+    {
+        return 'POST';
+    }
+
+    /**
+     * Gets the redirect form data array, if the redirect method is POST.
+     */
+    public function getRedirectData()
+    {
+        $data = $this->getData();
+        $data["token"] = $data["body"]["token"];
+//        foreach ($data as $key => $value) {
+//            if (empty($value)) {
+//                unset($data[$key]);
+//            }
+//        }
+        return $data;
+    }
+
+    /**
+     * Is the response successful?
+     *
+     * @return boolean
+     */
     public function isSuccessful()
     {
-        return empty($this->data['error']) && $this->getCode() < 400;
+        return false;
     }
 
-    public function getTransactionReference()
+    public function isRedirect()
     {
-        // This is usually correct for payments, authorizations, etc
-        if (!empty($this->data['transactions']) && !empty($this->data['transactions'][0]['related_resources'])) {
-            foreach (array('sale', 'authorization') as $type) {
-                if (!empty($this->data['transactions'][0]['related_resources'][0][$type])) {
-                    return $this->data['transactions'][0]['related_resources'][0][$type]['id'];
-                }
-            }
-        }
-
-        // This is a fallback, but is correct for fetch transaction and possibly others
-        if (!empty($this->data['id'])) {
-            return $this->data['id'];
-        }
-
-        return null;
-    }
-
-    public function getMessage()
-    {
-        if (isset($this->data['error_description'])) {
-            return $this->data['error_description'];
-        }
-
-        if (isset($this->data['message'])) {
-            return $this->data['message'];
-        }
-
-        return null;
-    }
-
-    public function getCode()
-    {
-        return $this->statusCode;
-    }
-
-    public function getCardReference()
-    {
-        if (isset($this->data['id'])) {
-            return $this->data['id'];
-        }
+        return true;
     }
 }

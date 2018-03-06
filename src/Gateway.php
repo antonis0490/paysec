@@ -138,7 +138,6 @@ class Gateway extends AbstractGateway
         return $this->createRequest('\Omnipay\Paysec\Message\RestPurchaseRequest', $parameters);
     }
 
-
     /**
      * Create a purchase request.
      * @param array $parameters
@@ -148,5 +147,4 @@ class Gateway extends AbstractGateway
     {
         return $this->createRequest('\Omnipay\Paysec\Message\RestCompletePurchaseRequest', $parameters);
     }
-
 }
