@@ -8,10 +8,10 @@ use Omnipay\Common\Exception\InvalidResponseException;
 
 class PaymentRequest extends AbstractRequest
 {
-    public $liveEndpoint = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
+    public $liveEndpoint = 'https://payment.allpay.site/api/transfer/v1/payIn/requestToken';
     protected $sandboxEndpoint = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
 
-    public $liveEndpoint2 = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
+    public $liveEndpoint2 = 'https://payment.allpay.site/api/transfer/v1/payIn/sendTokenForm';
     protected $sandboxEndpoint2 = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
 
 

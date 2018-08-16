@@ -19,7 +19,7 @@ abstract class AbstractRestRequest extends \Omnipay\Common\Message\AbstractReque
      * Live Endpoint URL
      * @var string URL
      */
-    protected $liveEndpoint = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/requestToken';
+    protected $liveEndpoint = 'https://payment.allpay.site/api/transfer/v1/payIn/requestToken';
 
     /**
      * Payer ID

@@ -8,7 +8,7 @@ use Omnipay\Common\Exception\InvalidResponseException;
 
 class PaymentCompleteRequest extends AbstractRequest
 {
-    public $liveEndpoint = 'https://paysecure.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
+    public $liveEndpoint = 'https://payment.allpay.site/api/transfer/v1/payIn/sendTokenForm';
     protected $sandboxEndpoint = 'https://pg-staging.paysec.com/Intrapay/paysec/v1/payIn/sendTokenForm';
 
     public function getEndpoint()
