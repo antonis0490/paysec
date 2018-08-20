@@ -6,9 +6,10 @@ use Cake\Utility\Xml;
 
 class StatusCallback extends AbstractResponse
 {
-    
-    const STATUS_SUCCESSFUL = 'approved';
+
+    const STATUS_SUCCESSFUL = 'success';
     const STATUS_PENDING = 'pending';
+    const STATUS_SENT = 'sent';
 
     /**
      * Construct a StatusCallback with the respective POST data.
@@ -17,11 +18,9 @@ class StatusCallback extends AbstractResponse
      */
     public function __construct(array $post)
     {
-        $help = Xml::build(base64_decode($post['orderXML']));
-        $this->xml = base64_decode($post['orderXML']);
-        $this->order = current($help->attributes());
-        $this->hash = $post['sha512'];
+        $this->data = $post;
     }
+
 
     public function isSuccessful()
     {
@@ -30,36 +29,57 @@ class StatusCallback extends AbstractResponse
 
     public function isPending()
     {
-        return  ($this->getStatus() == self::STATUS_PENDING);
+        return  ($this->getStatus() == self::STATUS_PENDING || $this->getStatus() == self::STATUS_SENT);
     }
 
     public function getStatus()
     {
-        return mb_strtolower($this->order['status']);
+        return mb_strtolower($this->data['status']);
     }
-    
+
     public function getMessage()
     {
-        return $this->order['description'].$this->order['decline_reason'];
+        return $this->data['status'].$this->data['statusMessage'];
     }
 
     public function getCardMask()
     {
-        return $this->order['card_num'];
+        return $this->data['card_num'];
     }
 
     public function getCardHolder()
     {
-        return $this->order['card_holder'];
+        return $this->data['card_holder'];
     }
 
     public function IdFilled(){
-        return ($this->order['id'] != '' ? true : false);
+        return ($this->data['cartId'] != '' ? true : false);
     }
 
-    public function ValidSignature($password){
-        $concat = mb_strtolower(hash('sha512', $this->xml.$password));
-        $valid = $concat == mb_strtolower($this->hash);
+    /**
+     * @param $wallet
+     * @param $secret
+     * @return string
+     */
+    public function getResponseChecksum($wallet, $secret)
+    {
+        $concat = $this->data["cartId"].";". $this->data["orderAmount"].";". $this->data["currency"].";";
+        $concat .= $wallet.";".$this->data["version"].";".$this->data["status"];
+        $concat = hash("sha256", $concat);
+        $sign = crypt($concat, $secret);
+        $pos = mb_strpos($sign, $secret) + mb_strlen($secret);
+        $signature = mb_substr($sign, $pos);
+        return $signature;
+    }
+
+    /**
+     * @param $wallet
+     * @param $secret
+     * @return bool
+     */
+    public function ValidSignature($wallet, $secret){
+        $concat = $this->getResponseChecksum($wallet, $secret);
+        $valid = $concat == mb_strtolower($this->data["signature"]);
         return $valid;
     }
 
