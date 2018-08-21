@@ -79,7 +79,7 @@ class StatusCallback extends AbstractResponse
      */
     public function ValidSignature($wallet, $secret){
         $concat = $this->getResponseChecksum($wallet, $secret);
-        $valid = $concat == mb_strtolower($this->data["signature"]);
+        $valid = mb_strtolower($concat) == mb_strtolower($this->data["signature"]);
         return $valid;
     }
 
